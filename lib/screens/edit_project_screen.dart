@@ -1,21 +1,35 @@
 import 'package:flutter/material.dart';
-import '../models/project_draft.dart';
 import '../state/app_state.dart';
 
-class ProjectScreen extends StatefulWidget {
+class EditProjectScreen extends StatefulWidget {
   final AppState appState;
+  final String draftId;
 
-  const ProjectScreen({super.key, required this.appState});
+  const EditProjectScreen({
+    super.key,
+    required this.appState,
+    required this.draftId,
+  });
 
   @override
-  State<ProjectScreen> createState() => _ProjectScreenState();
+  State<EditProjectScreen> createState() => _EditProjectScreenState();
 }
 
-class _ProjectScreenState extends State<ProjectScreen> {
+class _EditProjectScreenState extends State<EditProjectScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _clientNameController = TextEditingController();
-  final _notesController = TextEditingController();
+
+  late final TextEditingController _titleController;
+  late final TextEditingController _clientNameController;
+  late final TextEditingController _notesController;
+
+  @override
+  void initState() {
+    super.initState();
+    final d = widget.appState.getById(widget.draftId);
+    _titleController = TextEditingController(text: d?.title ?? "");
+    _clientNameController = TextEditingController(text: d?.clientName ?? "");
+    _notesController = TextEditingController(text: d?.notes ?? "");
+  }
 
   @override
   void dispose() {
@@ -25,27 +39,31 @@ class _ProjectScreenState extends State<ProjectScreen> {
     super.dispose();
   }
 
-  Future<void> _saveDraft() async {
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final draft = ProjectDraft.newDraft(
+    final d = widget.appState.getById(widget.draftId);
+    if (d == null) return;
+
+    final updated = d.copyWith(
       title: _titleController.text.trim(),
       clientName: _clientNameController.text.trim(),
       notes: _notesController.text.trim(),
     );
 
-    await widget.appState.addDraft(draft);
+    await widget.appState.updateDraft(updated);
 
     if (!mounted) return;
+    Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Utkast sparat: "${draft.title}"')),
+      const SnackBar(content: Text("Projekt uppdaterat")),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Nytt projekt")),
+      appBar: AppBar(title: const Text("Redigera projekt")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -82,8 +100,8 @@ class _ProjectScreenState extends State<ProjectScreen> {
               SizedBox(
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _saveDraft,
-                  child: const Text("Spara utkast"),
+                  onPressed: _save,
+                  child: const Text("Spara ändringar"),
                 ),
               ),
             ],

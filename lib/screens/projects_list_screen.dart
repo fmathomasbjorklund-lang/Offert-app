@@ -7,8 +7,9 @@ class ProjectsListScreen extends StatelessWidget {
 
   const ProjectsListScreen({super.key, required this.appState});
 
-  Future<void> _confirmDelete(BuildContext context, int index) async {
-    final draft = appState.drafts[index];
+  Future<void> _confirmDelete(BuildContext context, String draftId) async {
+    final draft = appState.getById(draftId);
+    if (draft == null) return;
 
     final ok = await showDialog<bool>(
       context: context,
@@ -30,10 +31,7 @@ class ProjectsListScreen extends StatelessWidget {
 
     if (ok == true) {
       await appState.deleteDraft(draft);
-
-      // mounted-check som funkar överallt
       if (!context.mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Projekt borttaget")),
       );
@@ -62,12 +60,15 @@ class ProjectsListScreen extends StatelessWidget {
                       trailing: IconButton(
                         tooltip: "Ta bort",
                         icon: const Icon(Icons.delete_outline),
-                        onPressed: () => _confirmDelete(context, i),
+                        onPressed: () => _confirmDelete(context, d.id),
                       ),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => ProjectDetailsScreen(draft: d),
+                            builder: (_) => ProjectDetailsScreen(
+                              appState: appState,
+                              draftId: d.id,
+                            ),
                           ),
                         );
                       },

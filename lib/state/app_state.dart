@@ -18,6 +18,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  ProjectDraft? getById(String id) {
+    for (final d in _drafts) {
+      if (d.id == id) return d;
+    }
+    return null;
+  }
+
   Future<void> addDraft(ProjectDraft draft) async {
     _drafts.insert(0, draft);
     await _storage.saveDrafts(_drafts);
@@ -25,7 +32,16 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> deleteDraft(ProjectDraft draft) async {
-    _drafts.remove(draft);
+    _drafts.removeWhere((d) => d.id == draft.id);
+    await _storage.saveDrafts(_drafts);
+    notifyListeners();
+  }
+
+  Future<void> updateDraft(ProjectDraft updated) async {
+    final idx = _drafts.indexWhere((d) => d.id == updated.id);
+    if (idx == -1) return;
+
+    _drafts[idx] = updated;
     await _storage.saveDrafts(_drafts);
     notifyListeners();
   }
