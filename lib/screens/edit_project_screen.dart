@@ -22,6 +22,8 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
   late final TextEditingController _clientNameController;
   late final TextEditingController _notesController;
 
+  String? _selectedTemplateId;
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +31,7 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
     _titleController = TextEditingController(text: d?.title ?? "");
     _clientNameController = TextEditingController(text: d?.clientName ?? "");
     _notesController = TextEditingController(text: d?.notes ?? "");
+    _selectedTemplateId = d?.pricingTemplateId;
   }
 
   @override
@@ -49,6 +52,7 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
       title: _titleController.text.trim(),
       clientName: _clientNameController.text.trim(),
       notes: _notesController.text.trim(),
+      pricingTemplateId: _selectedTemplateId,
     );
 
     await widget.appState.updateDraft(updated);
@@ -62,6 +66,8 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final templates = widget.appState.templates;
+
     return Scaffold(
       appBar: AppBar(title: const Text("Redigera projekt")),
       body: Padding(
@@ -70,6 +76,27 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              DropdownButtonFormField<String?>(
+                value: _selectedTemplateId,
+                decoration: const InputDecoration(
+                  labelText: "Pris-mall",
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  const DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text("Ingen mall"),
+                  ),
+                  ...templates.map(
+                    (t) => DropdownMenuItem<String?>(
+                      value: t.id,
+                      child: Text("${t.trade} • ${t.name}"),
+                    ),
+                  ),
+                ],
+                onChanged: (v) => setState(() => _selectedTemplateId = v),
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(

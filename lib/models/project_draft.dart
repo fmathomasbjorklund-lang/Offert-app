@@ -5,12 +5,16 @@ class ProjectDraft {
   final String notes;
   final DateTime createdAt;
 
+  // koppling till pris-mall (valfritt)
+  final String? pricingTemplateId;
+
   ProjectDraft({
     required this.id,
     required this.title,
     required this.clientName,
     required this.notes,
     required this.createdAt,
+    this.pricingTemplateId,
   });
 
   /// Hjälpare för att skapa nya projekt
@@ -18,6 +22,7 @@ class ProjectDraft {
     required String title,
     required String clientName,
     required String notes,
+    String? pricingTemplateId,
   }) {
     final now = DateTime.now();
     return ProjectDraft(
@@ -26,6 +31,7 @@ class ProjectDraft {
       clientName: clientName,
       notes: notes,
       createdAt: now,
+      pricingTemplateId: pricingTemplateId,
     );
   }
 
@@ -33,6 +39,8 @@ class ProjectDraft {
     String? title,
     String? clientName,
     String? notes,
+    String? pricingTemplateId,
+    bool clearPricingTemplateId = false,
   }) {
     return ProjectDraft(
       id: id,
@@ -40,6 +48,8 @@ class ProjectDraft {
       clientName: clientName ?? this.clientName,
       notes: notes ?? this.notes,
       createdAt: createdAt,
+      pricingTemplateId:
+          clearPricingTemplateId ? null : (pricingTemplateId ?? this.pricingTemplateId),
     );
   }
 
@@ -49,6 +59,7 @@ class ProjectDraft {
         'clientName': clientName,
         'notes': notes,
         'createdAt': createdAt.toIso8601String(),
+        'pricingTemplateId': pricingTemplateId,
       };
 
   /// Bakåtkompatibel: om gamla sparade objekt saknar id så skapar vi ett från createdAt
@@ -62,6 +73,7 @@ class ProjectDraft {
       clientName: (json['clientName'] ?? '') as String,
       notes: (json['notes'] ?? '') as String,
       createdAt: createdAt,
+      pricingTemplateId: json['pricingTemplateId'] as String?,
     );
   }
 }

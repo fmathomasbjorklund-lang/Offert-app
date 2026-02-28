@@ -26,6 +26,10 @@ class ProjectDetailsScreen extends StatelessWidget {
           );
         }
 
+        final template = draft.pricingTemplateId == null
+            ? null
+            : appState.getTemplateById(draft.pricingTemplateId!);
+
         return Scaffold(
           appBar: AppBar(
             title: const Text("Projekt"),
@@ -60,6 +64,17 @@ class ProjectDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 if (draft.clientName.trim().isNotEmpty)
                   Text("Kund: ${draft.clientName.trim()}"),
+                const SizedBox(height: 12),
+                const Text(
+                  "Pris-mall",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  template == null
+                      ? "Ingen mall"
+                      : "${template.trade} • ${template.name} (${template.hourlyRate.toStringAsFixed(0)} €/h)",
+                ),
                 const SizedBox(height: 12),
                 const Text(
                   "Anteckningar",

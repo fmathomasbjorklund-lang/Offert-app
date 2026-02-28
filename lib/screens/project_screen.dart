@@ -17,6 +17,8 @@ class _ProjectScreenState extends State<ProjectScreen> {
   final _clientNameController = TextEditingController();
   final _notesController = TextEditingController();
 
+  String? _selectedTemplateId;
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -32,6 +34,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
       title: _titleController.text.trim(),
       clientName: _clientNameController.text.trim(),
       notes: _notesController.text.trim(),
+      pricingTemplateId: _selectedTemplateId,
     );
 
     await widget.appState.addDraft(draft);
@@ -44,6 +47,8 @@ class _ProjectScreenState extends State<ProjectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final templates = widget.appState.templates;
+
     return Scaffold(
       appBar: AppBar(title: const Text("Nytt projekt")),
       body: Padding(
@@ -52,6 +57,27 @@ class _ProjectScreenState extends State<ProjectScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              DropdownButtonFormField<String?>(
+                value: _selectedTemplateId,
+                decoration: const InputDecoration(
+                  labelText: "Pris-mall",
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  const DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text("Ingen mall"),
+                  ),
+                  ...templates.map(
+                    (t) => DropdownMenuItem<String?>(
+                      value: t.id,
+                      child: Text("${t.trade} • ${t.name}"),
+                    ),
+                  ),
+                ],
+                onChanged: (v) => setState(() => _selectedTemplateId = v),
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(

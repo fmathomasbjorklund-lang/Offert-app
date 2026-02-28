@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../state/app_state.dart';
 import 'project_screen.dart';
 import 'projects_list_screen.dart';
+import 'templates_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final AppState appState;
@@ -20,10 +21,25 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  void _openTemplates(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => TemplatesListScreen(appState: appState)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Offert")),
+      appBar: AppBar(
+        title: const Text("Offert"),
+        actions: [
+          IconButton(
+            tooltip: "Mallar",
+            icon: const Icon(Icons.tune),
+            onPressed: () => _openTemplates(context),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
