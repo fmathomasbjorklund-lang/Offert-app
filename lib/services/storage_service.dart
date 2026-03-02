@@ -6,7 +6,7 @@ import '../models/pricing_template.dart';
 
 class StorageService {
   static const String _draftsKey = 'project_drafts_v2'; // v2 pga nytt fält senare
-  static const String _templatesKey = 'pricing_templates_v1';
+  static const String _templatesKey = 'pricing_templates_v2';
 
   Future<List<ProjectDraft>> loadDrafts() async {
     final prefs = await SharedPreferences.getInstance();

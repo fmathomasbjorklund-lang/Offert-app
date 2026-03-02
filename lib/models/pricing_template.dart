@@ -1,13 +1,15 @@
+import 'dart:math';
+
 class PricingTemplate {
   final String id;
-  final String name; // t.ex. "Snickare - Standard"
-  final String trade; // t.ex. "Snickare"
-  final double hourlyRate; // €/h
-  final double minHours; // min debitering i timmar
-  final double travelFee; // fast reseersättning (€)
-  final double markupPct; // påslag i %
+  final String name;
+  final String trade;
+  final double hourlyRate;
+  final double minHours;
+  final double travelFee;
+  final double markupPct;
 
-  PricingTemplate({
+  const PricingTemplate({
     required this.id,
     required this.name,
     required this.trade,
@@ -17,6 +19,13 @@ class PricingTemplate {
     required this.markupPct,
   });
 
+  static String _newId() {
+    // microseconds + random => praktiskt taget alltid unikt
+    final ts = DateTime.now().microsecondsSinceEpoch;
+    final rnd = Random().nextInt(1 << 20); // 0..~1M
+    return '${ts}_$rnd';
+  }
+
   factory PricingTemplate.newTemplate({
     required String name,
     required String trade,
@@ -25,9 +34,8 @@ class PricingTemplate {
     required double travelFee,
     required double markupPct,
   }) {
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
     return PricingTemplate(
-      id: id,
+      id: _newId(),
       name: name,
       trade: trade,
       hourlyRate: hourlyRate,
@@ -38,6 +46,7 @@ class PricingTemplate {
   }
 
   PricingTemplate copyWith({
+    String? id,
     String? name,
     String? trade,
     double? hourlyRate,
@@ -46,7 +55,7 @@ class PricingTemplate {
     double? markupPct,
   }) {
     return PricingTemplate(
-      id: id,
+      id: id ?? this.id,
       name: name ?? this.name,
       trade: trade ?? this.trade,
       hourlyRate: hourlyRate ?? this.hourlyRate,
@@ -66,13 +75,21 @@ class PricingTemplate {
         'markupPct': markupPct,
       };
 
-  factory PricingTemplate.fromJson(Map<String, dynamic> json) => PricingTemplate(
-        id: (json['id'] ?? '') as String,
-        name: (json['name'] ?? '') as String,
-        trade: (json['trade'] ?? '') as String,
-        hourlyRate: (json['hourlyRate'] as num?)?.toDouble() ?? 0,
-        minHours: (json['minHours'] as num?)?.toDouble() ?? 0,
-        travelFee: (json['travelFee'] as num?)?.toDouble() ?? 0,
-        markupPct: (json['markupPct'] as num?)?.toDouble() ?? 0,
-      );
+  factory PricingTemplate.fromJson(Map<String, dynamic> json) {
+    double asDouble(dynamic v, {double fallback = 0}) {
+      if (v == null) return fallback;
+      if (v is num) return v.toDouble();
+      return double.tryParse(v.toString()) ?? fallback;
+    }
+
+    return PricingTemplate(
+      id: json['id']?.toString() ?? _newId(),
+      name: json['name']?.toString() ?? '',
+      trade: json['trade']?.toString() ?? '',
+      hourlyRate: asDouble(json['hourlyRate'], fallback: 0),
+      minHours: asDouble(json['minHours'], fallback: 0),
+      travelFee: asDouble(json['travelFee'], fallback: 0),
+      markupPct: asDouble(json['markupPct'], fallback: 0),
+    );
+  }
 }
