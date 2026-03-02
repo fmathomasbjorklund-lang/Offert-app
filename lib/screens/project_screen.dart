@@ -58,7 +58,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
           child: ListView(
             children: [
               DropdownButtonFormField<String?>(
-                value: _selectedTemplateId,
+                initialValue: _selectedTemplateId,
                 decoration: const InputDecoration(
                   labelText: "Pris-mall",
                   border: OutlineInputBorder(),

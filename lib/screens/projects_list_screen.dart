@@ -51,7 +51,7 @@ class ProjectsListScreen extends StatelessWidget {
               ? const Center(child: Text("Inga projekt ännu"))
               : ListView.separated(
                   itemCount: drafts.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (context, index) => const Divider(height: 1),
                   itemBuilder: (context, i) {
                     final d = drafts[i];
                     return ListTile(

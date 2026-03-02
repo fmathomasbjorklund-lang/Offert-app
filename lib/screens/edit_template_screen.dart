@@ -122,7 +122,7 @@ class _EditTemplateScreenState extends State<EditTemplateScreen> {
           child: ListView(
             children: [
               DropdownButtonFormField<String>(
-                value: _trade,
+                initialValue: _trade,
                 decoration: const InputDecoration(
                   labelText: "Yrkesgrupp",
                   border: OutlineInputBorder(),

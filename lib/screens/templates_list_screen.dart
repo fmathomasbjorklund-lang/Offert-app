@@ -66,7 +66,7 @@ class TemplatesListScreen extends StatelessWidget {
               ? const Center(child: Text("Inga mallar ännu"))
               : ListView.separated(
                   itemCount: templates.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (context, index) => const Divider(height: 1),
                   itemBuilder: (context, i) {
                     final t = templates[i];
                     return ListTile(
